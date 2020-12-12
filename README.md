@@ -119,3 +119,19 @@ useEffect(() => {
 ```
  - When page is rendered, check permission and link functions to listeners.
 
+# Integrate SMS Functionality
+
+```
+npm install react-native-get-sms-android --save
+react-native link react-native-get-sms-android
+```
+ - https://github.com/briankabiro/react-native-get-sms-android#readme
+
+
+**Add permissions to your android/app/src/main/AndroidManifest.xml file**
+```xml
+<uses-permission android:name="android.permission.READ_SMS" />
+<uses-permission android:name="android.permission.WRITE_SMS" />
+<uses-permission android:name="android.permission.SEND_SMS" />
+```
+
