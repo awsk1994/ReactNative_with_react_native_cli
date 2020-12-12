@@ -119,3 +119,102 @@ useEffect(() => {
 ```
  - When page is rendered, check permission and link functions to listeners.
 
+# Integrate SMS Functionality
+
+```
+npm install react-native-get-sms-android --save
+react-native link react-native-get-sms-android
+```
+ - https://github.com/briankabiro/react-native-get-sms-android#readme
+
+
+**Add permissions to your android/app/src/main/AndroidManifest.xml file**
+```xml
+<uses-permission android:name="android.permission.READ_SMS" />
+<uses-permission android:name="android.permission.WRITE_SMS" />
+<uses-permission android:name="android.permission.SEND_SMS" />
+```
+
+```js
+import {PermissionsAndroid} from 'react-native';
+import SmsAndroid from 'react-native-get-sms-android';
+```
+```js
+const [smsList, setSmsList] = useState([]);
+```
+
+```js
+// Check Read and Send SMS permission.
+async function checkPermissions() {
+  console.log("checking SMS permissions");
+  let hasPermissions = false;
+  try {
+    hasPermissions = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.READ_SMS
+    );
+    if (!hasPermissions) return false;
+    hasPermissions = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.SEND_SMS
+    );
+    if (!hasPermissions) return false;
+  } catch (e) {
+    console.error(e);
+  }
+  return hasPermissions;
+};
+
+// Request for Read and Send SMS permission.
+async function requestPermissions() {
+  let granted = {};
+  try {
+    console.log("requesting SMS permissions");
+    granted = await PermissionsAndroid.requestMultiple(
+      [
+        PermissionsAndroid.PERMISSIONS.READ_SMS,
+        PermissionsAndroid.PERMISSIONS.SEND_SMS
+      ],
+      {
+        title: "Example App SMS Features",
+        message: "Example SMS App needs access to demonstrate SMS features",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    console.log(granted);
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use SMS features");
+    } else {
+      console.log("SMS permission denied");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
+async function handleOnPressListSMSButton(){
+  console.log("handleOnPressListSMSButton");
+  if (Platform.OS === "android") {
+    try {
+      if (!(await checkPermissions())) {
+        await requestPermissions();
+      }
+
+      if (await checkPermissions()) {
+        listSMS();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+};
+```
+
+```jsx
+<View style={styles.sectionContainer}>
+  <Button title="List SMS" onPress={handleOnPressListSMSButton}/>
+  <Text>{JSON.stringify(smsList)}</Text>
+</View>
+```
+ - Display smsList.
+ - **TODO: ** Figure out how to display the sms in a nice way. (Require dynamic loading of a component).
