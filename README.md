@@ -46,6 +46,12 @@ npx react-native run-ios
 # Integrating Android Notification Listener
  - https://github.com/leandrosimoes/react-native-android-notification-listener
 
+```
+yarn install react-native-android-notification-listener
+react-native link react-native-android-notification-listener
+```
+ - Install react-native-android-notification-listener
+
 ```js
 const [hasPermission, setHasPermission] = useState(false);
 const [lastNotification, setLastNotification] = useState(null);
@@ -67,7 +73,10 @@ const handleNotificationReceived = notification => {
  - Then, we create the functions to execute:
    - handleOnPressPermissionButton:
      - This will request for permission. 
-     - User will be directed to a page to enable notification access.
+     - User will be directed to a page to enable notification access (screenshot shown below)
+
+<img src="./img/RequestPermissionScreen.jpeg" height="500px"/>
+
    - handleNotificationReceived:
      - Determines what to do with the notification received.
      - In this case, we log it and set it to lastNotification.
