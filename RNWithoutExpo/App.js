@@ -16,6 +16,7 @@ import {
   View,
   Text,
   StatusBar,
+  Button
 } from 'react-native';
 
 import {
@@ -29,50 +30,50 @@ import {
 import RNAndroidNotificationListener from 'react-native-android-notification-listener';
 
 const App: () => React$Node = () => {
-  console.log("Started.");
   const [hasPermission, setHasPermission] = useState(false);
   const [lastNotification, setLastNotification] = useState(null);
 
-  // console.log("HasPermission = " + hasPermission);
-
   const handleOnPressPermissionButton = async () => {
+    // This will request for permission. User will be directed to a page to enable notification access.
     RNAndroidNotificationListener.requestPermission();
   };
 
   const handleAppStateChange = async nextAppState => {
-    // console.log("handleAppStateChange1");
+    // When there is a change in app state, we check permission status and update hasPermission.
     RNAndroidNotificationListener.getPermissionStatus().then(status => {
-      // console.log("handleAppStateChange2");
-      setHasPermission(status !== 'denied');
+      setHasPermission((status !== 'denied').toString());
     });
   };
 
   const handleNotificationReceived = notification => {
+    // When we receive a notification, we log it and set it to lastNotification.
     console.log(notification);
     setLastNotification(JSON.stringify(notification));
   };
 
   useEffect(() => {
+    // Check permission status once screen is rendered.
     RNAndroidNotificationListener.getPermissionStatus().then(status => {
-      console.log("Status = " + status);
-      setHasPermission(status !== 'denied');
-      console.log("HasPermission = " + hasPermission);
-
+      setHasPermission((status !== 'denied').toString());
       if(status == 'denied'){
-        RNAndroidNotificationListener.requestPermission();
+        console.error("hasPermission is denied. Need to request for notification permission.");
       }
     });
 
+    // Link handleNotificationReceived function.
     RNAndroidNotificationListener.onNotificationReceived(
       handleNotificationReceived,
     );
 
+    // Link handleAppStateChange function.
     AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
       AppState.removeEventListener('change', handleAppStateChange);
     };
   }, []);
+
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -92,6 +93,7 @@ const App: () => React$Node = () => {
               <Text>{hasPermission}</Text>
               <Text>lastNotification: </Text>
               <Text>{lastNotification}</Text>
+              <Button title="Request Permission" onPress={handleOnPressPermissionButton}/>
             </View>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Step One</Text>
