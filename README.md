@@ -48,3 +48,8 @@ npx react-native run-ios
 
 Unconfirmed notes:
  - Download Android Studio -> Run virtual device (or usb connect android phone)
+
+
+## Android Notification Listener
+ - https://github.com/leandrosimoes/react-native-android-notification-listener
+ 
