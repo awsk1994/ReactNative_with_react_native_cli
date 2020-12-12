@@ -36,13 +36,16 @@ const App: () => React$Node = () => {
   const [smsList, setSmsList] = useState([]);
 
   async function checkPermissions() {
-    console.log("checking SMS permissions");
+    console.log("Checking SMS permissions");
     let hasPermissions = false;
     try {
+      // Check ReadSMS permission.
       hasPermissions = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.READ_SMS
       );
       if (!hasPermissions) return false;
+
+      // Check SendSMS permission.
       hasPermissions = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.SEND_SMS
       );
@@ -56,7 +59,7 @@ const App: () => React$Node = () => {
   async function requestPermissions() {
     let granted = {};
     try {
-      console.log("requesting SMS permissions");
+      console.log("Requesting SMS permissions");
       granted = await PermissionsAndroid.requestMultiple(
         [
           PermissionsAndroid.PERMISSIONS.READ_SMS,
@@ -85,24 +88,28 @@ const App: () => React$Node = () => {
     console.log("handleOnPressListSMSButton");
     if (Platform.OS === "android") {
       try {
-        console.log("c1");
+        // Request permission is no permission yet.
         if (!(await checkPermissions())) {
           await requestPermissions();
         }
   
+        // List SMS if have permission.
         if (await checkPermissions()) {
           listSMS();
         }
       } catch (e) {
         console.error(e);
       }
+    } else {
+      console.error("ListSMS feature is not available on iOS.");
     }
   };
   
   function listSMS(){
-    var filter = {
+    // For full list of filter options, refer to Github Page's "List SMS Messages" section. (Github page: https://github.com/briankabiro/react-native-get-sms-android)
+    let filter = {
       box: "inbox",
-      maxCount: 5,
+      maxCount: 5
     };
   
     SmsAndroid.list(
@@ -111,7 +118,8 @@ const App: () => React$Node = () => {
         console.log("Failed with this error: " + fail);
       },
       (count, smsList) => {
-        var arr = JSON.parse(smsList);
+        let arr = JSON.parse(smsList);
+        console.log("Listing SMS (maxCount = 5):");
         console.log(arr);
         setSmsList(arr);
       }
