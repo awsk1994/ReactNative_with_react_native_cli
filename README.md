@@ -43,8 +43,79 @@ npx react-native run-ios
 5. Things to note about the structure of the project.
  - 
 
+# Integrating Android Notification Listener
+ - https://github.com/leandrosimoes/react-native-android-notification-listener
 
-===
+```
+yarn install react-native-android-notification-listener
+react-native link react-native-android-notification-listener
+```
+ - Install react-native-android-notification-listener
 
-Unconfirmed notes:
- - Download Android Studio -> Run virtual device (or usb connect android phone)
+```js
+const [hasPermission, setHasPermission] = useState(false);
+const [lastNotification, setLastNotification] = useState(null);
+```
+ - First, we create 2 variables(hasPermission and lastNotification) and their setters.
+
+```js
+const handleOnPressPermissionButton = async () => {
+  // This will request for permission. User will be directed to a page to enable notification access.
+  RNAndroidNotificationListener.requestPermission();
+};
+
+const handleNotificationReceived = notification => {
+  // When we receive a notification, we log it and set it to lastNotification.
+  console.log(notification);
+  setLastNotification(JSON.stringify(notification));
+};
+```
+ - Then, we create the functions to execute:
+   - handleOnPressPermissionButton:
+     - This will request for permission. 
+     - User will be directed to a page to enable notification access (screenshot shown below)
+
+<img src="./img/RequestPermissionScreen.jpeg" height="500px"/>
+
+   - handleNotificationReceived:
+     - Determines what to do with the notification received.
+     - In this case, we log it and set it to lastNotification.
+
+```js
+const handleAppStateChange = async nextAppState => {
+  // When there is a change in app state, we check permission status and update hasPermission.
+  RNAndroidNotificationListener.getPermissionStatus().then(status => {
+    setHasPermission((status !== 'denied').toString());
+  });
+};
+```
+   - handleAppStateChange:
+     - When there is a change in app state, we update hasPermission variable.
+     - To be honest, this method is kind of use-less; other than updating hasPermission variable.
+
+```js
+useEffect(() => {
+  // Check permission status once screen is rendered.
+  RNAndroidNotificationListener.getPermissionStatus().then(status => {
+    setHasPermission((status !== 'denied').toString());
+    if(status == 'denied'){
+      console.error("hasPermission is denied. Need to request for notification permission.");
+      // handleOnPressPermissionButton(); // Uncomment this to request permission when it is denied.
+    }
+  });
+
+  // Link handleNotificationReceived function.
+  RNAndroidNotificationListener.onNotificationReceived(
+    handleNotificationReceived,
+  );
+
+  // Link handleAppStateChange function.
+  AppState.addEventListener('change', handleAppStateChange);
+
+  return () => {
+    AppState.removeEventListener('change', handleAppStateChange);
+  };
+}, []);
+```
+ - When page is rendered, check permission and link functions to listeners.
+
