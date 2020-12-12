@@ -6,11 +6,13 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  AppState,
   View,
   Text,
   StatusBar,
@@ -24,7 +26,53 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import RNAndroidNotificationListener from 'react-native-android-notification-listener';
+
 const App: () => React$Node = () => {
+  console.log("Started.");
+  const [hasPermission, setHasPermission] = useState(false);
+  const [lastNotification, setLastNotification] = useState(null);
+
+  // console.log("HasPermission = " + hasPermission);
+
+  const handleOnPressPermissionButton = async () => {
+    RNAndroidNotificationListener.requestPermission();
+  };
+
+  const handleAppStateChange = async nextAppState => {
+    // console.log("handleAppStateChange1");
+    RNAndroidNotificationListener.getPermissionStatus().then(status => {
+      // console.log("handleAppStateChange2");
+      setHasPermission(status !== 'denied');
+    });
+  };
+
+  const handleNotificationReceived = notification => {
+    console.log(notification);
+    setLastNotification(JSON.stringify(notification));
+  };
+
+  useEffect(() => {
+    RNAndroidNotificationListener.getPermissionStatus().then(status => {
+      console.log("Status = " + status);
+      setHasPermission(status !== 'denied');
+      console.log("HasPermission = " + hasPermission);
+
+      if(status == 'denied'){
+        RNAndroidNotificationListener.requestPermission();
+      }
+    });
+
+    RNAndroidNotificationListener.onNotificationReceived(
+      handleNotificationReceived,
+    );
+
+    AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }, []);
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -39,6 +87,12 @@ const App: () => React$Node = () => {
             </View>
           )}
           <View style={styles.body}>
+            <View style={styles.sectionContainer}>
+              <Text>hasPermission</Text>
+              <Text>{hasPermission}</Text>
+              <Text>lastNotification: </Text>
+              <Text>{lastNotification}</Text>
+            </View>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Step One</Text>
               <Text style={styles.sectionDescription}>
