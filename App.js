@@ -28,7 +28,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import RNAndroidNotificationListener from 'react-native-android-notification-listener';
+// import RNAndroidNotificationListener from 'react-native-android-notification-listener';
 import SmsAndroid from 'react-native-get-sms-android';
 
 const App: () => React$Node = () => {
@@ -152,17 +152,17 @@ const App: () => React$Node = () => {
   const [hasPermission, setHasPermission] = useState(false);
   const [lastNotification, setLastNotification] = useState(null);
 
-  const handleOnPressPermissionButton = async () => {
-    // This will request for permission. User will be directed to a page to enable notification access.
-    RNAndroidNotificationListener.requestPermission();
-  };
+  // const handleOnPressPermissionButton = async () => {
+  //   // This will request for permission. User will be directed to a page to enable notification access.
+  //   RNAndroidNotificationListener.requestPermission();
+  // };
 
-  const handleAppStateChange = async nextAppState => {
-    // When there is a change in app state, we check permission status and update hasPermission.
-    RNAndroidNotificationListener.getPermissionStatus().then(status => {
-      setHasPermission((status !== 'denied').toString());
-    });
-  };
+  // const handleAppStateChange = async nextAppState => {
+  //   // When there is a change in app state, we check permission status and update hasPermission.
+  //   RNAndroidNotificationListener.getPermissionStatus().then(status => {
+  //     setHasPermission((status !== 'denied').toString());
+  //   });
+  // };
 
   const handleNotificationReceived = notification => {
     // When we receive a notification, we log it and set it to lastNotification.
@@ -172,24 +172,24 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     // Check permission status once screen is rendered.
-    RNAndroidNotificationListener.getPermissionStatus().then(status => {
-      setHasPermission((status !== 'denied').toString());
-      if(status == 'denied'){
-        console.error("hasPermission is denied. Need to request for notification permission.");
-      }
-    });
+    // RNAndroidNotificationListener.getPermissionStatus().then(status => {
+    //   setHasPermission((status !== 'denied').toString());
+    //   if(status == 'denied'){
+    //     console.error("hasPermission is denied. Need to request for notification permission.");
+    //   }
+    // });
 
-    // Link handleNotificationReceived function.
-    RNAndroidNotificationListener.onNotificationReceived(
-      handleNotificationReceived,
-    );
+    // // Link handleNotificationReceived function.
+    // RNAndroidNotificationListener.onNotificationReceived(
+    //   handleNotificationReceived,
+    // );
 
     // Link handleAppStateChange function.
-    AppState.addEventListener('change', handleAppStateChange);
+    // AppState.addEventListener('change', handleAppStateChange);
 
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-    };
+    // return () => {
+    //   AppState.removeEventListener('change', handleAppStateChange);
+    // };
   }, []);
 
   // JSX
@@ -212,7 +212,7 @@ const App: () => React$Node = () => {
               <Text>{hasPermission}</Text>
               <Text>lastNotification: </Text>
               <Text>{lastNotification}</Text>
-              <Button title="Request Permission" onPress={handleOnPressPermissionButton}/>
+              <Button title="Request Permission" onPress={() => handleOnPressPermissionButton}/>
             </View>
             <View style={styles.sectionContainer}>
               <Button title="List SMS" onPress={handleOnPressListSMSButton}/>
