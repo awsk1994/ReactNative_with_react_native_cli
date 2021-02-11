@@ -219,7 +219,16 @@ async function handleOnPressListSMSButton(){
  - Display smsList.
  - **TODO: ** Figure out how to display the sms in a nice way. (Require dynamic loading of a component).
 
-# [Solution] Flipper Problem when running ios simulator:
+
+
+# Solutions
+
+## Installing on ios
+
+1. go to ios folder, run 'pod install'
+2. cd .. and run 'react-native run-ios'
+
+## [Solution] Flipper Problem when running ios simulator:
 
 1. This issue is caused by an update to the "Flipper-Folly" pod-spec. If you'd like to keep Flipper enabled, you can override the version in your Podfile:
 
