@@ -238,7 +238,7 @@ async function handleOnPressListSMSButton(){
 ```
 cd ios
 vim PodFile
-(replace use_flipper! with use_flipper!({ 'Flipper-Folly' => '2.3.0' }))
+>> replace use_flipper! with use_flipper!({ 'Flipper-Folly' => '2.3.0' }) <<
 ```
 
  - Source: https://github.com/facebook/react-native/issues/30836
